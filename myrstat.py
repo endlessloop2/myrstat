@@ -49,8 +49,8 @@ class myrstat(object):
 
     blocklist = []
 
-    algolist = ['sha256d','scrypt','groestl','skein','yescrypt','argon2d']
-    colorlist = ['#8ecf1d','#2db6db','#d7370c','#000000','#ffe21b','#8f3c85']
+    algolist = ['NeoScrypt','Argon2d','Rainforest']
+    colorlist = ['#8ecf1d','#2db6db','#d73706']
     figsize=(8,6)
     lw=2.0
 
@@ -75,8 +75,8 @@ class myrstat(object):
         self.getblockwindowlist()
         self.plotalgos()
         self.plotalgodiffs()
-        self.plotversionma_algo()
-        self.plotversionma()
+       # self.plotversionma_algo()
+       # self.plotversionma()
 
     def get_moving_average_for_algo(self,algo,dlist,value,bip9=False):
         """Given an algo, give moving average percentage of value. Here bip9 is
@@ -211,65 +211,6 @@ class myrstat(object):
         ax.set_title('Block % for Mining Algorithms')
         legend(self.algolist,loc=0,prop={'size':8})
         savefig(self.plotpath+'algohist.png',bbox_inches='tight')
-    
-    def plotversionma(self):
-        """plots block versions"""
-        figure(figsize=self.figsize)
-        dm1 = self.get_moving_average(self.bip9bits,-1)
-        d1 = self.get_moving_average(self.bip9bits,1,bip9=True)
-        d2 = self.get_moving_average(self.bip9bits,2,bip9=True)
-        d3 = self.get_moving_average(self.bip9bits,3,bip9=True)
-        d5 = self.get_moving_average(self.bip9bits,5,bip9=True)
-        d6 = self.get_moving_average(self.bip9bits,6,bip9=True)
-        d7 = self.get_moving_average(self.bip9bits,7,bip9=True)
-        # create an indicator line:
-        di = []
-        dibip = []
-        for i in d1: di.append(75.)
-        h = self.heights
-        # block window:
-        bw_calc = h[-1] - (h[-1] % self.block_window)
-        bw_x = [bw_calc, bw_calc, 
-                bw_calc-self.block_window, bw_calc-self.block_window,
-                bw_calc]
-        bw_y = [0, 100, 
-                100, 0, 
-                0]
-        #plt.plot(h,dm1,'-',color='red',label='Legacy Blocks',
-        #    linewidth=self.lw)
-        #plt.plot(h,d1,'-',color='blue',label='CSV Blocks',
-        #    linewidth=self.lw)
-        #plt.plot(h,d2,'-',color='magenta',label='segwit Blocks',
-        #    linewidth=self.lw)
-        plt.plot(h,d3,'-',color='cyan',label='legbit Blocks',
-            linewidth=self.lw)
-        #plt.plot(h,d5,'-',color='red',label='reservealgo Blocks',
-        #    linewidth=self.lw)
-        #plt.plot(h,d6,'-',color='magenta',label='longblocks Blocks',
-        #    linewidth=self.lw)
-        plt.plot(h,d7,'-',color='blue',label='argon2d Blocks',
-            linewidth=self.lw)
-        plt.plot(h,di,'-.',color='green',label='BIP9 Activation Threshold',
-            linewidth=self.lw)
-        plt.plot(bw_x,bw_y,'-.',color='orange',label='Block Window',
-            linewidth=self.lw)
-        plt.hold('on')
-        plt.grid('on')
-        ax = plt.gca()
-        ax.get_xaxis().set_minor_locator(ticker.AutoMinorLocator())
-        ax.grid(b=True, which='major', color='#a0a0a0', linestyle='-',
-            linewidth=1.0)
-        ax.grid(b=True, which='minor', color='#dcdcdc', linestyle='-',
-            linewidth=0.5)
-        ax.get_xaxis().get_major_formatter().set_scientific(False)
-        ax.get_xaxis().get_major_formatter().set_useOffset(False)
-        ax.set_xlim([self.blocklist[0], self.blocklist[-1]])
-        ax.set_ylim([-10., 110.])
-        ax.set_ylabel('%')
-        legend(loc=0,prop={'size':8})
-        ax.set_title('Block Softforks')
-        ax.set_xlabel('Block Number')
-        savefig(self.plotpath+'versionma.png',bbox_inches='tight')
 
     def plotalgodiffs(self):
         figure(figsize=self.figsize)
@@ -297,60 +238,6 @@ class myrstat(object):
             else:
                 ax.set_xlabel('Block Number')
         savefig(self.plotpath+'diffhist.png',bbox_inches='tight')
-
-    def plotversionma_algo(self):
-        figure(figsize=self.figsize)
-        for i, algo in enumerate(self.algolist):
-            dm1 = self.get_moving_average_for_algo(algo,self.bip9bits,-1)
-            d1 = self.get_moving_average_for_algo(algo,self.bip9bits,1,
-                    bip9=True)
-            d2 = self.get_moving_average_for_algo(algo,self.bip9bits,2,
-                    bip9=True)
-            d3 = self.get_moving_average_for_algo(algo,self.bip9bits,3,
-                    bip9=True)
-            d5 = self.get_moving_average_for_algo(algo,self.bip9bits,5,
-                    bip9=True)
-            d6 = self.get_moving_average_for_algo(algo,self.bip9bits,6,
-                    bip9=True)
-            d7 = self.get_moving_average_for_algo(algo,self.bip9bits,7,
-                    bip9=True)
-            h = self.get_data_for_algo(algo,self.heights)
-            plt.subplot(len(self.algolist),1,i+1)
-            #plt.plot(h,dm1,'-',color='red',label='Legacy Blocks',
-            #    linewidth=self.lw)
-            #plt.plot(h,d1,'-',color='blue',label='CSV  Blocks',
-            #    linewidth=self.lw)
-            #plt.plot(h,d2,'-',color='magenta',label='segwit Blocks',
-            #    linewidth=self.lw)
-            plt.plot(h,d3,'-',color='cyan',label='legbit Blocks',
-                linewidth=self.lw)
-            #plt.plot(h,d5,'-',color='red',label='reservealgo Blocks',
-            #    linewidth=self.lw)
-            #plt.plot(h,d6,'-',color='magenta',label='longblocks Blocks',
-            #    linewidth=self.lw)
-            plt.plot(h,d7,'-',color='blue',label='argon2d Blocks',
-                linewidth=self.lw)
-            plt.hold('on')
-            plt.grid('on')
-            ax = plt.gca()
-            ax.get_xaxis().set_minor_locator(ticker.AutoMinorLocator())
-            ax.grid(b=True, which='major', color='#a0a0a0', linestyle='-',
-                linewidth=1.0)
-            ax.grid(b=True, which='minor', color='#dcdcdc', linestyle='-',
-                linewidth=0.5)
-            ax.get_xaxis().get_major_formatter().set_scientific(False)
-            ax.get_xaxis().get_major_formatter().set_useOffset(False)
-            ax.set_xlim([self.blocklist[0], self.blocklist[-1]])
-            ax.set_ylim([-10., 110.])
-            ax.set_ylabel(algo)
-            legend(loc=3,prop={'size':8})
-            if i==0: ax.set_title('Block Softfork %')
-            if not i==(len(self.algolist)-1):
-                ax.xaxis.set_ticklabels([])
-            else:
-                ax.set_xlabel('Block Number')
-        savefig(self.plotpath+'algoversionma.png',bbox_inches='tight')
-        
 
 if __name__ == '__main__':
     import argparse
