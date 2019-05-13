@@ -49,8 +49,8 @@ class myrstat(object):
 
     blocklist = []
 
-    algolist = ['NeoScrypt','Argon2d','Rainforest']
-    colorlist = ['#8ecf1d','#2db6db','#d73706']
+    algolist = ['NeoScrypt','Argon2d','Lyra2CZ']
+    colorlist = ['#8ecf1d','#2db6db','#a654c9']
     figsize=(8,6)
     lw=2.0
 
